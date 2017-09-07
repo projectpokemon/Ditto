@@ -15,4 +15,13 @@
     <ProjectReference Include="..\IrcDotNet\IrcDotNet.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="shutdown.sh">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="startup.sh">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>
