@@ -15,6 +15,7 @@ namespace Ditto
         {
             this.DiscordConnectionInfo = discordConnectionInfo;
             this.IrcConnectionInfo = ircConnectionInfo;
+            this.EnableConsoleLogging = true;
         }
 
         private DiscordConnectionInfo DiscordConnectionInfo { get; set; } 
@@ -22,6 +23,8 @@ namespace Ditto
 
         private IrcConnectionInfo IrcConnectionInfo { get; set; }
         private StandardIrcClient IrcClient { get; set; }
+
+        public bool EnableConsoleLogging { get; set; }
 
         /// <summary>
         /// Connects to both IRC and Discord
@@ -78,7 +81,7 @@ namespace Ditto
 
         private Task Discord_Log(LogMessage msg)
         {
-            Console.WriteLine(msg.ToString());
+            if (EnableConsoleLogging) Console.WriteLine(msg.ToString());
             return Task.CompletedTask;
         }
 
@@ -89,7 +92,7 @@ namespace Ditto
                 return;
             }
 
-            Console.WriteLine($"#{message.Channel.Name}: [{message.Author.Username}] {message.Content}");
+            if (EnableConsoleLogging) Console.WriteLine($"#{message.Channel.Name}: [{message.Author.Username}] {message.Content}");
 
             if (message.Content == "!ping")
             {
@@ -135,22 +138,22 @@ namespace Ditto
 
         private void Irc_RawMessageReceived(object sender, IrcRawMessageEventArgs e)
         {
-            Console.WriteLine(e.RawContent);
+            if (EnableConsoleLogging) Console.WriteLine(e.RawContent);
         }
 
         private void Irc_ErrorMessageReceived(object sender, IrcErrorMessageEventArgs e)
         {
-            Console.WriteLine(e.Message);
+            if (EnableConsoleLogging) Console.WriteLine(e.Message);
         }
 
         private void Irc_Connected(object sender, EventArgs e)
         {
-            Console.WriteLine("Connected to IRC");
+            if (EnableConsoleLogging) Console.WriteLine("Connected to IRC");
         }
 
         private void Irc_MotdReceived(object sender, EventArgs e)
         {
-            Console.WriteLine("Motd received");
+            if (EnableConsoleLogging) Console.WriteLine("Motd received");
             IrcClient.LocalUser.JoinedChannel += Irc_JoinedChannel;
             IrcClient.LocalUser.LeftChannel += Irc_LeftChannel;
             JoinIrcChannel();
@@ -158,13 +161,13 @@ namespace Ditto
 
         private void Irc_JoinedChannel(object sender, IrcChannelEventArgs e)
         {
-            Console.WriteLine("Joined channel");
+            if (EnableConsoleLogging) Console.WriteLine("Joined channel");
             e.Channel.MessageReceived += Irc_ChannelMessageReceived;
         }
 
         private void Irc_LeftChannel(object sender, IrcChannelEventArgs e)
         {
-            Console.WriteLine("Left channel");
+            if (EnableConsoleLogging) Console.WriteLine("Left channel");
             e.Channel.MessageReceived -= Irc_ChannelMessageReceived;
 
             // Try to join again
@@ -173,8 +176,8 @@ namespace Ditto
 
         private void Irc_ConnectFailed(object sender, IrcErrorEventArgs e)
         {
-            Console.WriteLine("Connect failed.");
-            Console.WriteLine(e.Error);
+            if (EnableConsoleLogging) Console.WriteLine("Connect failed.");
+            if (EnableConsoleLogging) Console.WriteLine(e.Error);
         }
         #endregion
     }

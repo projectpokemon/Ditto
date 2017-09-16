@@ -36,6 +36,10 @@ namespace Ditto
             var ircInfo = JsonConvert.DeserializeObject<IrcConnectionInfo>(File.ReadAllText("irc.json"));
 
             Pair = new ChannelPair(ircInfo, discordInfo);
+            if (args.Contains("noprompt"))
+            {
+                Pair.EnableConsoleLogging = false;
+            }
             Console.WriteLine("Connecting...");
             Pair.Connect().Wait();
             Console.WriteLine("Ready.");
