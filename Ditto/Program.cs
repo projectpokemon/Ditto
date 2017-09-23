@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Ditto
@@ -30,7 +31,7 @@ namespace Ditto
                     var discordInfo = JsonConvert.DeserializeObject<DiscordConnectionInfo>(File.ReadAllText(discordFilename));
                     var ircInfo = JsonConvert.DeserializeObject<IrcConnectionInfo>(File.ReadAllText(ircFilename));
 
-                    var pair = new ChannelPair(ircInfo, discordInfo);
+                    var pair = new ChannelPair(new IrcConnection(ircInfo), discordInfo);
                     if (args.Contains("noprompt"))
                     {
                         pair.EnableConsoleLogging = false;
