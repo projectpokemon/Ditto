@@ -27,8 +27,8 @@ namespace Ditto
                 var ircFilename = discordFilename.Replace(".discord.json", ".irc.json");
                 if (File.Exists(ircFilename))
                 {
-                    var discordInfo = JsonConvert.DeserializeObject<DiscordConnectionInfo>(File.ReadAllText("discord.json"));
-                    var ircInfo = JsonConvert.DeserializeObject<IrcConnectionInfo>(File.ReadAllText("irc.json"));
+                    var discordInfo = JsonConvert.DeserializeObject<DiscordConnectionInfo>(File.ReadAllText(discordFilename));
+                    var ircInfo = JsonConvert.DeserializeObject<IrcConnectionInfo>(File.ReadAllText(ircFilename));
 
                     var pair = new ChannelPair(ircInfo, discordInfo);
                     if (args.Contains("noprompt"))
