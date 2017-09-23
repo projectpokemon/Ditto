@@ -35,6 +35,7 @@ namespace Ditto
             else
             {
                 IrcClient = ConnectionPool[connectionName];
+                IrcClient.LocalUser.JoinedChannel += Irc_JoinedChannel;
                 JoinIrcChannel();
             }
         }
