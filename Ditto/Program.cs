@@ -6,39 +6,43 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Ditto
 {
     public class Program
     {
-        private static ChannelPair Pair;
+        private static List<ChannelPair> Pairs;
 
         private static bool _listen;
 
         public static void Main(string[] args)
         {
             _listen = true;
+            Pairs = new List<ChannelPair>();
 
-            if (!File.Exists("discord.json"))
+            var discordFilenames = Directory.GetFiles(".", "*.discord.json");
+            foreach (var discordFilename in discordFilenames)
             {
-                Console.WriteLine("Can't find discord.json");
-                return;
+                var ircFilename = discordFilename.Replace(".discord.json", ".irc.json");
+                if (File.Exists(ircFilename))
+                {
+                    var discordInfo = JsonConvert.DeserializeObject<DiscordConnectionInfo>(File.ReadAllText(discordFilename));
+                    var ircInfo = JsonConvert.DeserializeObject<IrcConnectionInfo>(File.ReadAllText(ircFilename));
+
+                    var pair = new ChannelPair(new IrcConnection(ircInfo), discordInfo);
+                    if (args.Contains("noprompt"))
+                    {
+                        pair.EnableConsoleLogging = false;
+                    }
+                    Console.WriteLine("Connecting...");
+                    pair.Connect().Wait();
+                    Console.WriteLine("Ready.");
+                    Pairs.Add(pair);
+                }
             }
-
-            if (!File.Exists("irc.json"))
-            {
-                Console.WriteLine("Can't find irc.json");
-                return;
-            }
-
-            var discordInfo = JsonConvert.DeserializeObject<DiscordConnectionInfo>(File.ReadAllText("discord.json"));
-            var ircInfo = JsonConvert.DeserializeObject<IrcConnectionInfo>(File.ReadAllText("irc.json"));
-
-            Pair = new ChannelPair(ircInfo, discordInfo);
-            Console.WriteLine("Connecting...");
-            Pair.Connect().Wait();
-            Console.WriteLine("Ready.");
+           
             MainAsync(args).GetAwaiter().GetResult();
         }
 
@@ -61,10 +65,16 @@ namespace Ditto
                     switch (cmd[0].ToLower())
                     {
                         case "say":
+                            if (Pairs.Count > 1)
+                            {
+                                Console.WriteLine("There is currently more than 1 channel pair active. Manual input is not currently supported.");
+                                break;
+                            }
+
                             if (cmd.Length > 1)
                             {
-                                await Pair.SendDiscordMessage(cmd[1]);
-                                Pair.SendIrcMessage(cmd[1]);
+                                await Pairs[0].SendDiscordMessage(cmd[1]);
+                                Pairs[0].SendIrcMessage(cmd[1]);
                             }
                             else
                             {
