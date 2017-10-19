@@ -89,7 +89,7 @@ namespace Ditto
                 var lines = message.Content.Split('\n').Select(x => x.Trim()).ToArray();                
                 for (int i = 0; i < Math.Min(lines.Length, 4); i++)
                 {
-                    var formattedMessage = $"<{message.Author.Username}> {lines[i]}";
+                    var formattedMessage = $"<{message.Author.Username}> {lines[i]}";                    
                     foreach (var item in message.Tags)
                     {
                         switch (item.Type)
@@ -107,6 +107,10 @@ namespace Ditto
                         
                     }
                     SendIrcMessage(formattedMessage);
+                    foreach (var item in message.Attachments)
+                    {
+                        SendIrcMessage($"* {message.Author.Username} attached file '{item.Filename}': {item.Url}");
+                    }
                 }
                 if (lines.Length > 4)
                 {
