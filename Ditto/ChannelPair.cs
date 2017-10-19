@@ -86,10 +86,10 @@ namespace Ditto
             }
             else
             {
-                var lines = message.Content.Split('\n').Select(x => x.Trim()).ToArray();
-                var formattedMessage = $"<{message.Author.Username}> {lines[i]}";
+                var lines = message.Content.Split('\n').Select(x => x.Trim()).ToArray();                
                 for (int i = 0; i < Math.Min(lines.Length, 4); i++)
                 {
+                    var formattedMessage = $"<{message.Author.Username}> {lines[i]}";
                     foreach (var item in message.Tags)
                     {
                         switch (item.Type)
