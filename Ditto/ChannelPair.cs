@@ -79,6 +79,11 @@ namespace Ditto
             {
                 await message.Channel.SendMessageAsync("Pong!");
             }
+            else if (message.Content == "!online")
+            {
+                var users = IrcConnection.GetOnlineUsers();
+                await message.Channel.SendMessageAsync("Users in IRC: " + string.Join(", ", users.Select(x => x.User.NickName)));
+            }
             else
             {
                 var lines = message.Content.Split('\n').Select(x => x.Trim()).ToArray();
