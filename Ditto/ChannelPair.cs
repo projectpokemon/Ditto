@@ -115,7 +115,7 @@ namespace Ditto
             else if (e.Text.StartsWith((char)1 + "ACTION ") && e.Text.Last() == (char)1)
             {
                 // The /me command
-                SendDiscordMessage($"**{e.Source}** {e.Text.Substring(8, e.Text.Length - 8)}").Wait();
+                SendDiscordMessage($"**{e.Source}** {e.Text.Substring(8, e.Text.Length - 9)}").Wait();
             }
             else
             {
