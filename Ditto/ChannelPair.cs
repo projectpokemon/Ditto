@@ -79,12 +79,38 @@ namespace Ditto
             {
                 await message.Channel.SendMessageAsync("Pong!");
             }
+            else if (message.Content == "!online")
+            {
+                var users = IrcConnection.GetOnlineUsers();
+                await message.Channel.SendMessageAsync("Users in IRC: ```" + string.Join(", ", users.Select(x => x.User.NickName).OrderBy(x => x)) + "```");
+            }
             else
             {
-                var lines = message.Content.Split('\n').Select(x => x.Trim()).ToArray();
+                var lines = message.Content.Split('\n').Select(x => x.Trim()).ToArray();                
                 for (int i = 0; i < Math.Min(lines.Length, 4); i++)
                 {
-                    SendIrcMessage($"<{message.Author.Username}> {lines[i]}");
+                    var formattedMessage = $"<{message.Author.Username}> {lines[i]}";                    
+                    foreach (var item in message.Tags)
+                    {
+                        switch (item.Type)
+                        {
+                            case TagType.ChannelMention:
+                                formattedMessage = formattedMessage.Replace("<#" + item.Key + ">", "(#" + item.Value + ")");
+                                break;                 
+                            case TagType.RoleMention:
+                                formattedMessage = formattedMessage.Replace("<@&" + item.Key + ">", "(@" + item.Value + ")");
+                                break;
+                            case TagType.UserMention:
+                                formattedMessage = formattedMessage.Replace("<@" + item.Key + ">", "(@" + item.Value + ")");
+                                break;
+                        }
+                        
+                    }
+                    SendIrcMessage(formattedMessage);
+                    foreach (var item in message.Attachments)
+                    {
+                        SendIrcMessage($"* {message.Author.Username} attached file '{item.Filename}': {item.Url}");
+                    }
                 }
                 if (lines.Length > 4)
                 {
@@ -110,7 +136,7 @@ namespace Ditto
             else if (e.Text.StartsWith((char)1 + "ACTION ") && e.Text.Last() == (char)1)
             {
                 // The /me command
-                SendDiscordMessage($"**{e.Source}** {e.Text.Substring(8, e.Text.Length - 8)}").Wait();
+                SendDiscordMessage($"**{e.Source}** {e.Text.Substring(8, e.Text.Length - 9)}").Wait();
             }
             else
             {

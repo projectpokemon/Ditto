@@ -1,6 +1,7 @@
 ﻿using IrcDotNet;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Threading;
 
@@ -60,6 +61,11 @@ namespace Ditto
             {
                 return IrcConnectionInfo.Channel;
             }
+        }
+
+        public IrcChannelUserCollection GetOnlineUsers()
+        {
+            return IrcClient.Channels.First(x => x.Name == Channel).Users;
         }
 
         public void SendMessage(string channel, string msg)
