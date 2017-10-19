@@ -82,7 +82,7 @@ namespace Ditto
             else if (message.Content == "!online")
             {
                 var users = IrcConnection.GetOnlineUsers();
-                await message.Channel.SendMessageAsync("Users in IRC: " + string.Join(", ", users.Select(x => x.User.NickName)));
+                await message.Channel.SendMessageAsync("Users in IRC: ```" + string.Join(", ", users.Select(x => x.User.NickName).OrderBy(x => x)) + "```");
             }
             else
             {
