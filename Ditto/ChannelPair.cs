@@ -24,7 +24,7 @@ namespace Ditto
 
         private IrcConnection IrcConnection { get; set; }
 
-        private Regex[] Filters = new Regex[] { new Regex("[.*].*Be true.*Be pure.*Be epic.*", RegexOptions.Compiled | RegexOptions.IgnoreCase) };
+        private Regex[] Filters = new Regex[] { new Regex("\\[.*\\].*Be true.*Be pure.*Be epic.*", RegexOptions.Compiled | RegexOptions.IgnoreCase) };
 
         public bool EnableConsoleLogging { get; set; }
 
