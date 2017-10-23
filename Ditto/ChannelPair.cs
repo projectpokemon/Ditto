@@ -66,6 +66,16 @@ namespace Ditto
             return Filters.Any(x => x.IsMatch(text));
         }
 
+        private SocketGuild GetDiscordGuild()
+        {
+            return DiscordClient.Guilds.First(x => x.Id == DiscordConnectionInfo.GuildId);
+        }
+
+        private bool IsDiscordUserAdmin(ulong userId)
+        {
+            return GetDiscordGuild().Roles.Any(r => r.Members.Any(m => m.Id == userId) && r.Permissions.Administrator);
+        }
+
         #region Discord Event Handlers
 
         private Task Discord_Log(LogMessage msg)
@@ -91,6 +101,17 @@ namespace Ditto
             {
                 var users = IrcConnection.GetOnlineUsers();
                 await message.Channel.SendMessageAsync("Users in IRC: ```" + string.Join(", ", users.Select(x => x.User.NickName).OrderBy(x => x)) + "```");
+            }
+            else if (message.Content.StartsWith("!say "))
+            {
+                if (IsDiscordUserAdmin(message.Author.Id))
+                {
+                    SendIrcMessage(message.Content.Split(' ', 2)[1]);
+                }
+                else
+                {
+                    await SendDiscordMessage("The 'say' command is only availble to administrators");
+                }
             }
             else
             {
@@ -130,7 +151,7 @@ namespace Ditto
 
         #region IRC Event Handlers
 
-        private void Irc_ChannelMessageReceived(object sender, IrcMessageEventArgs e)
+        private async void Irc_ChannelMessageReceived(object sender, IrcMessageEventArgs e)
         {
             if (!e.Targets.Any(x => x.Name == IrcConnection.Channel) || e.Source.Name == IrcConnection.Nick)
             {
@@ -141,16 +162,27 @@ namespace Ditto
             {
                 SendIrcMessage("Pong!");
             }
+            if (e.Text.StartsWith("!say "))
+            {
+                if (IrcConnection.GetOnlineUsers().FirstOrDefault(x => x.User.NickName == e.Source.Name).User.IsOperator)
+                {
+                    await SendDiscordMessage(e.Text.Split(' ', 2)[1]);
+                }
+                else
+                {
+                    SendIrcMessage("The 'say' command is only available to operators.");
+                }
+            }
             else if (e.Text.StartsWith((char)1 + "ACTION ") && e.Text.Last() == (char)1)
             {
                 // The /me command
-                SendDiscordMessage($"**{e.Source}** {e.Text.Substring(8, e.Text.Length - 9)}").Wait();
+                await SendDiscordMessage($"**{e.Source}** {e.Text.Substring(8, e.Text.Length - 9)}");
             }
             else
             {
                 if (!IsFiltered(e.Text))
                 {
-                    SendDiscordMessage($"<**{e.Source}**> {e.Text}").Wait();
+                    await SendDiscordMessage($"<**{e.Source}**> {e.Text}");
                 }
                 else
                 {
