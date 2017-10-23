@@ -162,17 +162,17 @@ namespace Ditto
             {
                 SendIrcMessage("Pong!");
             }
-            if (e.Text.StartsWith("!say "))
-            {
-                if (IrcConnection.GetOnlineUsers().FirstOrDefault(x => x.User.NickName == e.Source.Name).User.IsOperator)
-                {
-                    await SendDiscordMessage(e.Text.Split(' ', 2)[1]);
-                }
-                else
-                {
-                    SendIrcMessage("The 'say' command is only available to operators.");
-                }
-            }
+            //else if (e.Text.StartsWith("!say "))
+            //{
+            //    if (IrcConnection.GetOnlineUsers().FirstOrDefault(x => x.User.NickName == e.Source.Name).User.IsOperator)
+            //    {
+            //        await SendDiscordMessage(e.Text.Split(' ', 2)[1]);
+            //    }
+            //    else
+            //    {
+            //        SendIrcMessage("The 'say' command is only available to operators.");
+            //    }
+            //}
             else if (e.Text.StartsWith((char)1 + "ACTION ") && e.Text.Last() == (char)1)
             {
                 // The /me command
