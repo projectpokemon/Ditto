@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace Ditto
@@ -18,10 +19,12 @@ namespace Ditto
             this.EnableConsoleLogging = true;
         }
 
-        private DiscordConnectionInfo DiscordConnectionInfo { get; set; } 
+        private DiscordConnectionInfo DiscordConnectionInfo { get; set; }
         private DiscordSocketClient DiscordClient { get; set; }
 
         private IrcConnection IrcConnection { get; set; }
+
+        private Regex[] Filters = new Regex[] { new Regex("[.*].*Be true.*Be pure.*Be epic.*", RegexOptions.Compiled | RegexOptions.IgnoreCase) };
 
         public bool EnableConsoleLogging { get; set; }
 
@@ -32,7 +35,7 @@ namespace Ditto
         {
             await ConnectDiscord();
             ConnectIrc();
-        }        
+        }
 
         private async Task ConnectDiscord()
         {
@@ -56,6 +59,11 @@ namespace Ditto
         public void SendIrcMessage(string msg)
         {
             IrcConnection.SendMessage(IrcConnection.Channel, msg);
+        }
+
+        private bool IsFiltered(string text)
+        {
+            return Filters.Any(x => x.IsMatch(text));
         }
 
         #region Discord Event Handlers
@@ -86,17 +94,17 @@ namespace Ditto
             }
             else
             {
-                var lines = message.Content.Split('\n').Select(x => x.Trim()).ToArray();                
+                var lines = message.Content.Split('\n').Select(x => x.Trim()).ToArray();
                 for (int i = 0; i < Math.Min(lines.Length, 4); i++)
                 {
-                    var formattedMessage = $"<{message.Author.Username}> {lines[i]}";                    
+                    var formattedMessage = $"<{message.Author.Username}> {lines[i]}";
                     foreach (var item in message.Tags)
                     {
                         switch (item.Type)
                         {
                             case TagType.ChannelMention:
                                 formattedMessage = formattedMessage.Replace("<#" + item.Key + ">", "(#" + item.Value + ")");
-                                break;                 
+                                break;
                             case TagType.RoleMention:
                                 formattedMessage = formattedMessage.Replace("<@&" + item.Key + ">", "(@" + item.Value + ")");
                                 break;
@@ -104,7 +112,7 @@ namespace Ditto
                                 formattedMessage = formattedMessage.Replace("<@" + item.Key + ">", "(@" + item.Value + ")");
                                 break;
                         }
-                        
+
                     }
                     SendIrcMessage(formattedMessage);
                     foreach (var item in message.Attachments)
@@ -140,7 +148,14 @@ namespace Ditto
             }
             else
             {
-                SendDiscordMessage($"<**{e.Source}**> {e.Text}").Wait();
+                if (!IsFiltered(e.Text))
+                {
+                    SendDiscordMessage($"<**{e.Source}**> {e.Text}").Wait();
+                }
+                else
+                {
+                    SendIrcMessage("Previous message matched pre-defined filter and was not sent.");
+                }                
             }
         }
         #endregion
