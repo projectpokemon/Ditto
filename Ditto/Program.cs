@@ -16,10 +16,30 @@ namespace Ditto
         private static List<ChannelPair> Pairs;
 
         private static bool _listen;
+        private static bool _exceptionRecovery;
 
         public static void Main(string[] args)
         {
+            _exceptionRecovery = false;
             _listen = true;
+            while (_listen)
+            {
+                try
+                {
+                    MainAsync(args).GetAwaiter().GetResult();
+                }
+                catch (Exception ex)
+                {                    
+                    File.WriteAllText("Exception-" + DateTime.Now.ToString() + ".txt", ex.ToString());
+                    _exceptionRecovery = true;
+                }
+                Task.Delay(30000).Wait();
+            }                      
+        }
+
+        public static async Task MainAsync(string[] args)
+        {
+            
             Pairs = new List<ChannelPair>();
 
             var discordFilenames = Directory.GetFiles(".", "*.discord.json");
@@ -42,12 +62,13 @@ namespace Ditto
                     Pairs.Add(pair);
                 }
             }
-           
-            MainAsync(args).GetAwaiter().GetResult();
-        }
 
-        public static async Task MainAsync(string[] args)
-        {
+            if (_exceptionRecovery)
+            {
+                await Task.Delay(30000);
+                await Pairs[0].SendDiscordMessage("Ditto just recovered from a fatal exception.");
+            }
+
             // Listen for mannual commands
             if (args.Contains("noprompt"))
             {
