@@ -17,6 +17,7 @@ namespace Ditto
             this.DiscordConnectionInfo = discordConnectionInfo;
             this.IrcConnection = ircConnection;
             this.EnableConsoleLogging = true;
+            this.Ready = false;
         }
 
         private DiscordConnectionInfo DiscordConnectionInfo { get; set; }
@@ -25,6 +26,7 @@ namespace Ditto
         private IrcConnection IrcConnection { get; set; }
 
         private Regex[] Filters = new Regex[] { new Regex("\\[.*\\].*Be true.*Be pure.*Be epic.*", RegexOptions.Compiled | RegexOptions.IgnoreCase) };
+        private bool Ready { get; set; }
 
         public bool EnableConsoleLogging { get; set; }
 
@@ -34,6 +36,7 @@ namespace Ditto
         public async Task Connect()
         {
             await ConnectDiscord();
+            await Task.Delay(10000);
             ConnectIrc();
         }
 
@@ -48,6 +51,7 @@ namespace Ditto
 
         public async Task SendDiscordMessage(string msg)
         {
+            if (!Ready) return;
             await DiscordClient.GetGuild(DiscordConnectionInfo.GuildId).GetTextChannel(DiscordConnectionInfo.ChannelId).SendMessageAsync(msg);
         }
 
@@ -58,6 +62,7 @@ namespace Ditto
 
         public void SendIrcMessage(string msg)
         {
+            if (!Ready) return;
             IrcConnection.SendMessage(IrcConnection.Channel, msg);
         }
 
@@ -189,6 +194,11 @@ namespace Ditto
                     SendIrcMessage("Previous message matched pre-defined filter and was not sent.");
                 }                
             }
+        }
+
+        private void Irc_ConnectComplete(object sender, EventArgs e)
+        {
+            Ready = true;
         }
         #endregion
     }
