@@ -102,6 +102,10 @@ namespace Ditto
             {
                 await message.Channel.SendMessageAsync("Pong!");
             }
+            else if (message.Content == "!ding")
+            {
+                await message.Channel.SendMessageAsync("Dong!");
+            }
             else if (message.Content == "!online")
             {
                 var users = IrcConnection.GetOnlineUsers();
@@ -166,6 +170,10 @@ namespace Ditto
             if (e.Text == "!ping")
             {
                 SendIrcMessage("Pong!");
+            }
+            else if (e.Text == "!ding")
+            {
+                SendIrcMessage("Dong!");
             }
             //else if (e.Text.StartsWith("!say "))
             //{
