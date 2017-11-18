@@ -18,6 +18,7 @@ namespace Ditto
             this.DiscordConnectionInfo = discordConnectionInfo;
             this.IrcConnection = ircConnection;
             this.EnableConsoleLogging = true;
+            this.Ready = false;
         }
 
         private DiscordConnectionInfo DiscordConnectionInfo { get; set; }
@@ -26,6 +27,7 @@ namespace Ditto
         private IrcConnection IrcConnection { get; set; }
 
         private Regex[] Filters = new Regex[] { new Regex("\\[.*\\].*Be true.*Be pure.*Be epic.*", RegexOptions.Compiled | RegexOptions.IgnoreCase) };
+        private bool Ready { get; set; }
 
         public bool EnableConsoleLogging { get; set; }
 
@@ -35,6 +37,7 @@ namespace Ditto
         public async Task Connect()
         {
             await ConnectDiscord();
+            await Task.Delay(10000);
             ConnectIrc();
         }
 
@@ -59,6 +62,7 @@ namespace Ditto
 
         public async Task SendDiscordMessage(string msg)
         {
+            if (!Ready) return;
             try
             {
                 await DiscordClient.GetGuild(DiscordConnectionInfo.GuildId).GetTextChannel(DiscordConnectionInfo.ChannelId).SendMessageAsync(msg);
@@ -76,6 +80,7 @@ namespace Ditto
 
         public void SendIrcMessage(string msg)
         {
+            if (!Ready) return;
             IrcConnection.SendMessage(IrcConnection.Channel, msg);
         }
 
@@ -114,6 +119,10 @@ namespace Ditto
             if (message.Content == "!ping")
             {
                 await message.Channel.SendMessageAsync("Pong!");
+            }
+            else if (message.Content == "!ding")
+            {
+                await message.Channel.SendMessageAsync("Dong!");
             }
             else if (message.Content == "!online")
             {
@@ -180,6 +189,10 @@ namespace Ditto
             {
                 SendIrcMessage("Pong!");
             }
+            else if (e.Text == "!ding")
+            {
+                SendIrcMessage("Dong!");
+            }
             //else if (e.Text.StartsWith("!say "))
             //{
             //    if (IrcConnection.GetOnlineUsers().FirstOrDefault(x => x.User.NickName == e.Source.Name).User.IsOperator)
@@ -207,6 +220,11 @@ namespace Ditto
                     SendIrcMessage("Previous message matched pre-defined filter and was not sent.");
                 }                
             }
+        }
+
+        private void Irc_ConnectComplete(object sender, EventArgs e)
+        {
+            Ready = true;
         }
         #endregion
     }

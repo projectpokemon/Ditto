@@ -42,6 +42,7 @@ namespace Ditto
         }
 
         public event EventHandler<IrcMessageEventArgs> MessageReceived;
+        public event EventHandler ConnectComplete;
 
         private StandardIrcClient IrcClient { get; set; }
         private IrcConnectionInfo IrcConnectionInfo { get; set; }
@@ -105,6 +106,7 @@ namespace Ditto
         {
             if (EnableConsoleLogging) Console.WriteLine("Joined channel");
             e.Channel.MessageReceived += Irc_ChannelMessageReceived;
+            ConnectComplete?.Invoke(this, new EventArgs());
         }
 
         private void Irc_LeftChannel(object sender, IrcChannelEventArgs e)
