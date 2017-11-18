@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.26430.15
+VisualStudioVersion = 15.0.27004.2008
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Ditto", "Ditto\Ditto.csproj", "{B4D93EE6-97DA-43DD-84CB-DCDC3E843BC8}"
 EndProject
@@ -10,19 +10,27 @@ EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
+		Debug-IPv4|Any CPU = Debug-IPv4|Any CPU
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{B4D93EE6-97DA-43DD-84CB-DCDC3E843BC8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{B4D93EE6-97DA-43DD-84CB-DCDC3E843BC8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B4D93EE6-97DA-43DD-84CB-DCDC3E843BC8}.Debug-IPv4|Any CPU.ActiveCfg = Debug-IPv4|Any CPU
+		{B4D93EE6-97DA-43DD-84CB-DCDC3E843BC8}.Debug-IPv4|Any CPU.Build.0 = Debug-IPv4|Any CPU
 		{B4D93EE6-97DA-43DD-84CB-DCDC3E843BC8}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B4D93EE6-97DA-43DD-84CB-DCDC3E843BC8}.Release|Any CPU.Build.0 = Release|Any CPU
 		{5A8EF7A9-4DFB-4DA6-A73B-C0028E26DBFA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{5A8EF7A9-4DFB-4DA6-A73B-C0028E26DBFA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5A8EF7A9-4DFB-4DA6-A73B-C0028E26DBFA}.Debug-IPv4|Any CPU.ActiveCfg = Debug-IPv4|Any CPU
+		{5A8EF7A9-4DFB-4DA6-A73B-C0028E26DBFA}.Debug-IPv4|Any CPU.Build.0 = Debug-IPv4|Any CPU
 		{5A8EF7A9-4DFB-4DA6-A73B-C0028E26DBFA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5A8EF7A9-4DFB-4DA6-A73B-C0028E26DBFA}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {E992E091-2EE7-44AF-9DAD-2158574BAFCA}
 	EndGlobalSection
 EndGlobal

@@ -12,6 +12,7 @@ namespace Ditto
 {
     public class ChannelPair
     {
+        private static Dictionary<string, DiscordSocketClient> SharedDiscordClients { get; set; } = new Dictionary<string, DiscordSocketClient>();
         public ChannelPair(IrcConnection ircConnection, DiscordConnectionInfo discordConnectionInfo)
         {
             this.DiscordConnectionInfo = discordConnectionInfo;
@@ -39,16 +40,33 @@ namespace Ditto
 
         private async Task ConnectDiscord()
         {
-            DiscordClient = new DiscordSocketClient();
-            DiscordClient.Log += Discord_Log;
-            DiscordClient.MessageReceived += Discord_MessageReceived;
-            await DiscordClient.LoginAsync(TokenType.Bot, DiscordConnectionInfo.Token);
-            await DiscordClient.StartAsync();
+            if (SharedDiscordClients.ContainsKey(DiscordConnectionInfo.Token))
+            {
+                DiscordClient = SharedDiscordClients[DiscordConnectionInfo.Token];
+                DiscordClient.Log += Discord_Log;
+                DiscordClient.MessageReceived += Discord_MessageReceived;
+            }
+            else
+            {
+                DiscordClient = new DiscordSocketClient();
+                SharedDiscordClients.Add(DiscordConnectionInfo.Token, DiscordClient);
+                DiscordClient.Log += Discord_Log;
+                DiscordClient.MessageReceived += Discord_MessageReceived;
+                await DiscordClient.LoginAsync(TokenType.Bot, DiscordConnectionInfo.Token);
+                await DiscordClient.StartAsync();
+            }          
         }
 
         public async Task SendDiscordMessage(string msg)
         {
-            await DiscordClient.GetGuild(DiscordConnectionInfo.GuildId).GetTextChannel(DiscordConnectionInfo.ChannelId).SendMessageAsync(msg);
+            try
+            {
+                await DiscordClient.GetGuild(DiscordConnectionInfo.GuildId).GetTextChannel(DiscordConnectionInfo.ChannelId).SendMessageAsync(msg);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Failed to send message to Discord: " + ex.ToString());
+            }            
         }
 
         private void ConnectIrc()

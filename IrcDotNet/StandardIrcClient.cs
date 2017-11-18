@@ -37,7 +37,11 @@ namespace IrcDotNet
 
         public StandardIrcClient()
         {
+#if IPV4
+            socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+#else
             socket = new Socket(AddressFamily.InterNetworkV6, SocketType.Stream, ProtocolType.Tcp);
+#endif
             sendTimer = new Timer(WritePendingMessages, null,
                 Timeout.Infinite, Timeout.Infinite);
             disconnectedEvent = new AutoResetEvent(false);
