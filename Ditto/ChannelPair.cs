@@ -19,6 +19,7 @@ namespace Ditto
             this.IrcConnection = ircConnection;
             this.EnableConsoleLogging = true;
             this.Ready = false;
+            this.IrcConnection.ConnectComplete += Irc_ConnectComplete;
         }
 
         private DiscordConnectionInfo DiscordConnectionInfo { get; set; }
