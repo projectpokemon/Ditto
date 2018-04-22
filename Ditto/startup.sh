@@ -10,6 +10,6 @@ else
   echo -n "" > $pidFile
   cd ${basePath}
   echo "Starting Ditto"
-  ./Ditto noprompt 2>&1 > /dev/null &
+  nohup ./Ditto noprompt >/dev/null 2>&1 &
   echo -n "$! " >> $pidFile
 fi
