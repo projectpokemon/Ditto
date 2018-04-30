@@ -288,3 +288,7 @@ __pycache__/
 *.xsd.cs
 /Ditto/discord.json
 /Ditto/irc.json
+/Ditto/projectpokemon.irc.json
+/Ditto/projectpokemon.discord.json
+/Ditto/pp-staff.irc.json
+/Ditto/pp-staff.discord.json

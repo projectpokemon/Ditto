@@ -7,6 +7,13 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Ditto", "Ditto\Ditto.csproj
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IrcDotNet", "IrcDotNet\IrcDotNet.csproj", "{5A8EF7A9-4DFB-4DA6-A73B-C0028E26DBFA}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Watchog", "Watchog\Watchog.csproj", "{4E71E8AA-FA91-4D78-A770-2E080E2D8263}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{0E2536C6-C76A-46E2-99EA-2398F2437739}"
+	ProjectSection(SolutionItems) = preProject
+		README.MD = README.MD
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -26,6 +33,12 @@ Global
 		{5A8EF7A9-4DFB-4DA6-A73B-C0028E26DBFA}.Debug-IPv4|Any CPU.Build.0 = Debug-IPv4|Any CPU
 		{5A8EF7A9-4DFB-4DA6-A73B-C0028E26DBFA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5A8EF7A9-4DFB-4DA6-A73B-C0028E26DBFA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4E71E8AA-FA91-4D78-A770-2E080E2D8263}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4E71E8AA-FA91-4D78-A770-2E080E2D8263}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4E71E8AA-FA91-4D78-A770-2E080E2D8263}.Debug-IPv4|Any CPU.ActiveCfg = Debug|Any CPU
+		{4E71E8AA-FA91-4D78-A770-2E080E2D8263}.Debug-IPv4|Any CPU.Build.0 = Debug|Any CPU
+		{4E71E8AA-FA91-4D78-A770-2E080E2D8263}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4E71E8AA-FA91-4D78-A770-2E080E2D8263}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
