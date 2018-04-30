@@ -48,6 +48,7 @@ namespace Watchog
                         p = new Process();
                         p.StartInfo.FileName = args[0];
                         p.StartInfo.Arguments = args[1];
+                        p.Start();
                         p.WaitForExit();
                         p.Dispose();
                         p = null;
