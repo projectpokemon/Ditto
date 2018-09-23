@@ -3,7 +3,7 @@
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <TargetFramework>netcoreapp2.0</TargetFramework>
-    <RuntimeIdentifiers>win10-x64;linux-x64</RuntimeIdentifiers>
+    <RuntimeIdentifiers>win-x64;linux-x64;debian.9-x64</RuntimeIdentifiers>
     <Configurations>Debug;Release;Debug-IPv4</Configurations>
   </PropertyGroup>
 
@@ -14,15 +14,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\IrcDotNet\IrcDotNet.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Update="shutdown.sh">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="startup.sh">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
   </ItemGroup>
 
 </Project>
