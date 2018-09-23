@@ -16,37 +16,21 @@ namespace Ditto
         private static List<ChannelPair> Pairs;
 
         private static bool _listen;
-        private static int _exceptionCount;
 
-        public static void Main(string[] args)
+        public static async Task Main(string[] args)
         {
-            _exceptionCount = 0;
-            _listen = true;
-            while (_listen && _exceptionCount < 10)
-            {
-                try
-                {
-                    MainAsync(args).Wait();
-                }
-                catch (Exception ex)
-                {                    
-                    File.WriteAllText(Path.Combine(Directory.GetCurrentDirectory(), $"Exception-{DateTime.Now.ToString("YYYY-MM-DD-hh-mm-ss")}.txt"), ex.ToString());
-                    _exceptionCount += 1;
-                }
-                Task.Delay(30000).Wait();
-            }                      
-        }
-
-        public static async Task MainAsync(string[] args)
-        {            
+            Console.WriteLine("Starting...");
             Pairs = new List<ChannelPair>();
 
             var discordFilenames = Directory.GetFiles(".", "*.discord.json");
+            Console.WriteLine("Found " + discordFilenames.Length.ToString() + " Discord settings");
             foreach (var discordFilename in discordFilenames)
             {
+                Console.WriteLine(discordFilename);
                 var ircFilename = discordFilename.Replace(".discord.json", ".irc.json");
                 if (File.Exists(ircFilename))
                 {
+                    Console.Write(ircFilename);
                     var discordInfo = JsonConvert.DeserializeObject<DiscordConnectionInfo>(File.ReadAllText(discordFilename));
                     var ircInfo = JsonConvert.DeserializeObject<IrcConnectionInfo>(File.ReadAllText(ircFilename));
 
@@ -56,16 +40,14 @@ namespace Ditto
                         pair.EnableConsoleLogging = false;
                     }
                     Console.WriteLine("Connecting...");
-                    pair.Connect().Wait();
+                    await pair.Connect();
                     Console.WriteLine("Ready.");
                     Pairs.Add(pair);
                 }
-            }
-
-            if (_exceptionCount > 0)
-            {
-                await Task.Delay(30000);
-                await Pairs[0].SendDiscordMessage("Ditto just recovered from a fatal exception.");
+                else
+                {
+                    Console.Write("Did not find IRC settings. Not creating pair.");
+                }
             }
 
             // Listen for mannual commands
