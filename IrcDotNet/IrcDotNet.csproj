@@ -12,10 +12,13 @@
     <PackageLicenseUrl>https://github.com/IrcDotNet/IrcDotNet/License.txt</PackageLicenseUrl>
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
     <Description>Library for communicating via Internet Relay Chat (IRC) protocol and its extensions</Description>
-    <Configurations>Debug;Release;Debug-IPv4</Configurations>
+    <Configurations>Debug;Release;Debug-IPv4;Release-IPv4</Configurations>
   </PropertyGroup>
 
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug-IPv4|AnyCPU'">
+  <PropertyGroup Condition="'$(Configuration)'=='Debug-IPv4'">
+    <DefineConstants>TRACE;DEBUG_IPV4;NETSTANDARD1_5;IPV4</DefineConstants>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)'=='Release-IPv4'">
     <DefineConstants>TRACE;DEBUG_IPV4;NETSTANDARD1_5;IPV4</DefineConstants>
   </PropertyGroup>
 

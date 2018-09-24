@@ -3,26 +3,18 @@
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <TargetFramework>netcoreapp2.0</TargetFramework>
-    <RuntimeIdentifiers>win10-x64;linux-x64</RuntimeIdentifiers>
-    <Configurations>Debug;Release;Debug-IPv4</Configurations>
+    <RuntimeIdentifiers>win-x64;linux-x64;debian.9-x64</RuntimeIdentifiers>
+    <Configurations>Debug;Release;Debug-IPv4;Release-IPv4</Configurations>
+    <LangVersion>7.3</LangVersion>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="Discord.Net" Version="1.0.2" />
-    <PackageReference Include="Newtonsoft.Json" Version="10.0.3" />
+    <PackageReference Include="Newtonsoft.Json" Version="11.0.2" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\IrcDotNet\IrcDotNet.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Update="shutdown.sh">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="startup.sh">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
   </ItemGroup>
 
 </Project>
