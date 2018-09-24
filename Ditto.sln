@@ -17,6 +17,7 @@ Global
 		Debug|Any CPU = Debug|Any CPU
 		Debug-IPv4|Any CPU = Debug-IPv4|Any CPU
 		Release|Any CPU = Release|Any CPU
+		Release-IPv4|Any CPU = Release-IPv4|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{B4D93EE6-97DA-43DD-84CB-DCDC3E843BC8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
@@ -25,12 +26,16 @@ Global
 		{B4D93EE6-97DA-43DD-84CB-DCDC3E843BC8}.Debug-IPv4|Any CPU.Build.0 = Debug-IPv4|Any CPU
 		{B4D93EE6-97DA-43DD-84CB-DCDC3E843BC8}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B4D93EE6-97DA-43DD-84CB-DCDC3E843BC8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B4D93EE6-97DA-43DD-84CB-DCDC3E843BC8}.Release-IPv4|Any CPU.ActiveCfg = Release-IPv4|Any CPU
+		{B4D93EE6-97DA-43DD-84CB-DCDC3E843BC8}.Release-IPv4|Any CPU.Build.0 = Release-IPv4|Any CPU
 		{2E1632CE-3048-4EE7-B7A8-318F3007990D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{2E1632CE-3048-4EE7-B7A8-318F3007990D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2E1632CE-3048-4EE7-B7A8-318F3007990D}.Debug-IPv4|Any CPU.ActiveCfg = Debug-IPv4|Any CPU
 		{2E1632CE-3048-4EE7-B7A8-318F3007990D}.Debug-IPv4|Any CPU.Build.0 = Debug-IPv4|Any CPU
 		{2E1632CE-3048-4EE7-B7A8-318F3007990D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2E1632CE-3048-4EE7-B7A8-318F3007990D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2E1632CE-3048-4EE7-B7A8-318F3007990D}.Release-IPv4|Any CPU.ActiveCfg = Release-IPv4|Any CPU
+		{2E1632CE-3048-4EE7-B7A8-318F3007990D}.Release-IPv4|Any CPU.Build.0 = Release-IPv4|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

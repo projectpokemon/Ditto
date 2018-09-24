@@ -4,7 +4,7 @@
     <OutputType>Exe</OutputType>
     <TargetFramework>netcoreapp2.0</TargetFramework>
     <RuntimeIdentifiers>win-x64;linux-x64;debian.9-x64</RuntimeIdentifiers>
-    <Configurations>Debug;Release;Debug-IPv4</Configurations>
+    <Configurations>Debug;Release;Debug-IPv4;Release-IPv4</Configurations>
     <LangVersion>7.3</LangVersion>
   </PropertyGroup>
 
