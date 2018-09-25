@@ -19,16 +19,17 @@ namespace Ditto
 
         public static async Task Main(string[] args)
         {
+            var noprompt = args.Contains("noprompt");
             try
             {
-                Console.WriteLine("Starting...");
+                if (!noprompt) Console.WriteLine("Starting...");
                 Pairs = new List<ChannelPair>();
 
                 var discordFilenames = Directory.GetFiles(".", "*.discord.json");
-                Console.WriteLine("Found " + discordFilenames.Length.ToString() + " Discord settings");
+                if (!noprompt) Console.WriteLine("Found " + discordFilenames.Length.ToString() + " Discord settings");
                 foreach (var discordFilename in discordFilenames)
                 {
-                    Console.WriteLine(discordFilename);
+                    if (!noprompt) Console.WriteLine(discordFilename);
                     var ircFilename = discordFilename.Replace(".discord.json", ".irc.json");
                     if (File.Exists(ircFilename))
                     {
@@ -36,28 +37,28 @@ namespace Ditto
                         var discordInfo = JsonConvert.DeserializeObject<DiscordConnectionInfo>(File.ReadAllText(discordFilename));
                         var ircInfo = JsonConvert.DeserializeObject<IrcConnectionInfo>(File.ReadAllText(ircFilename));
 
-                        var pair = new ChannelPair(new IrcConnection(ircInfo), discordInfo);
-                        if (args.Contains("noprompt"))
+                        var pair = new ChannelPair(new IrcConnection(ircInfo) { EnableConsoleLogging = !noprompt }, discordInfo)
                         {
-                            pair.EnableConsoleLogging = false;
-                        }
-                        Console.WriteLine("Connecting...");
+                            EnableConsoleLogging = !noprompt
+                        };
+                        if (!noprompt) Console.WriteLine("Connecting...");
                         await pair.Connect();
-                        Console.WriteLine("Ready.");
+                        if (!noprompt) Console.WriteLine("Ready.");
                         Pairs.Add(pair);
                     }
                     else
                     {
-                        Console.Write("Did not find IRC settings. Not creating pair.");
+                        if (!noprompt) Console.Write("Did not find IRC settings. Not creating pair.");
                     }
                 }
 
                 // Listen for mannual commands
-                if (args.Contains("noprompt"))
+                if (noprompt)
                 {
                     while (true)
                     {
                         // Block until process is manually stopped
+                        await Task.Delay(int.MaxValue);
                     }
                 }
                 else
@@ -71,7 +72,7 @@ namespace Ditto
                             case "say":
                                 if (Pairs.Count > 1)
                                 {
-                                    Console.WriteLine("There is currently more than 1 channel pair active. Manual input is not currently supported.");
+                                    if (!noprompt) Console.WriteLine("There is currently more than 1 channel pair active. Manual input is not currently supported.");
                                     break;
                                 }
 
@@ -82,7 +83,7 @@ namespace Ditto
                                 }
                                 else
                                 {
-                                    Console.WriteLine("Usage: say <message>");
+                                    if (!noprompt) Console.WriteLine("Usage: say <message>");
                                 }
                                 break;
                             case "exit":
@@ -99,7 +100,7 @@ namespace Ditto
             {
                 Console.Write(ex.ToString());
                 throw;
-            }             
-        }        
+            }
+        }
     }
 }
