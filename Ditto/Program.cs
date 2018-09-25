@@ -58,6 +58,7 @@ namespace Ditto
                     while (true)
                     {
                         // Block until process is manually stopped
+                        await Task.Delay(int.MaxValue);
                     }
                 }
                 else
