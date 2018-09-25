@@ -70,7 +70,7 @@ namespace Ditto
             }
             catch (Exception ex)
             {
-                Console.WriteLine("Failed to send message to Discord: " + ex.ToString());
+                if (EnableConsoleLogging) Console.WriteLine("Failed to send message to Discord: " + ex.ToString());
             }            
         }
 
