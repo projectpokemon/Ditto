@@ -20,30 +20,31 @@ namespace Ditto
         public static async Task Main(string[] args)
         {
             var noprompt = args.Contains("noprompt");
+            var writeToConsole = !noprompt;
             try
             {
-                if (!noprompt) Console.WriteLine("Starting...");
+                if (writeToConsole) Console.WriteLine("Starting...");
                 Pairs = new List<ChannelPair>();
 
                 var discordFilenames = Directory.GetFiles(".", "*.discord.json");
-                if (!noprompt) Console.WriteLine("Found " + discordFilenames.Length.ToString() + " Discord settings");
+                if (writeToConsole) Console.WriteLine("Found " + discordFilenames.Length.ToString() + " Discord settings");
                 foreach (var discordFilename in discordFilenames)
                 {
-                    if (!noprompt) Console.WriteLine(discordFilename);
+                    if (writeToConsole) Console.WriteLine(discordFilename);
                     var ircFilename = discordFilename.Replace(".discord.json", ".irc.json");
                     if (File.Exists(ircFilename))
                     {
-                        Console.Write(ircFilename);
+                        if (writeToConsole) Console.Write(ircFilename);
                         var discordInfo = JsonConvert.DeserializeObject<DiscordConnectionInfo>(File.ReadAllText(discordFilename));
                         var ircInfo = JsonConvert.DeserializeObject<IrcConnectionInfo>(File.ReadAllText(ircFilename));
 
-                        var pair = new ChannelPair(new IrcConnection(ircInfo) { EnableConsoleLogging = !noprompt }, discordInfo)
+                        var pair = new ChannelPair(new IrcConnection(ircInfo) { EnableConsoleLogging = writeToConsole }, discordInfo)
                         {
-                            EnableConsoleLogging = !noprompt
+                            EnableConsoleLogging = writeToConsole
                         };
-                        if (!noprompt) Console.WriteLine("Connecting...");
+                        if (writeToConsole) Console.WriteLine("Connecting...");
                         await pair.Connect();
-                        if (!noprompt) Console.WriteLine("Ready.");
+                        if (writeToConsole) Console.WriteLine("Ready.");
                         Pairs.Add(pair);
                     }
                     else
@@ -98,7 +99,8 @@ namespace Ditto
             }
             catch (Exception ex)
             {
-                Console.Write(ex.ToString());
+                if (writeToConsole) Console.Write(ex.ToString());
+                File.WriteAllText(DateTime.Now.ToString("error-yyyy-MM-dd_hh-mm-ss.txt"), ex.ToString());
                 throw;
             }
         }
