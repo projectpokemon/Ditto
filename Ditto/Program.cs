@@ -1,6 +1,4 @@
-﻿using Discord;
-using Discord.WebSocket;
-using IrcDotNet;
+﻿using Azure.Storage.Blobs;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -14,95 +12,110 @@ namespace Ditto
     public class Program
     {
         private static List<ChannelPair> Pairs;
-
-        private static bool _listen;
+        private static bool WriteToConsole;
 
         public static async Task Main(string[] args)
         {
-            var noprompt = args.Contains("noprompt");
-            var writeToConsole = !noprompt;
+            WriteToConsole = !args.Contains("noprompt");
             try
             {
-                if (writeToConsole) Console.WriteLine("Starting...");
+                if (WriteToConsole) Console.WriteLine("Starting...");
                 Pairs = new List<ChannelPair>();
 
-                var discordFilenames = Directory.GetFiles(".", "*.discord.json");
-                if (writeToConsole) Console.WriteLine("Found " + discordFilenames.Length.ToString() + " Discord settings");
-                foreach (var discordFilename in discordFilenames)
-                {
-                    if (writeToConsole) Console.WriteLine(discordFilename);
-                    var ircFilename = discordFilename.Replace(".discord.json", ".irc.json");
-                    if (File.Exists(ircFilename))
-                    {
-                        if (writeToConsole) Console.Write(ircFilename);
-                        var discordInfo = JsonConvert.DeserializeObject<DiscordConnectionInfo>(File.ReadAllText(discordFilename));
-                        var ircInfo = JsonConvert.DeserializeObject<IrcConnectionInfo>(File.ReadAllText(ircFilename));
+                var blobConnectionString = args.FirstOrDefault(a => a.StartsWith("blobConnectionString=", StringComparison.OrdinalIgnoreCase));
+                var blobContainerName = args.FirstOrDefault(a => a.StartsWith("blobContainerName=", StringComparison.OrdinalIgnoreCase));
+                var blobContainerFolder = args.FirstOrDefault(a => a.StartsWith("blobContainerFolder=", StringComparison.OrdinalIgnoreCase));
 
-                        var pair = new ChannelPair(new IrcConnection(ircInfo) { EnableConsoleLogging = writeToConsole }, discordInfo)
-                        {
-                            EnableConsoleLogging = writeToConsole
-                        };
-                        if (writeToConsole) Console.WriteLine("Connecting...");
-                        await pair.Connect();
-                        if (writeToConsole) Console.WriteLine("Ready.");
-                        Pairs.Add(pair);
-                    }
-                    else
-                    {
-                        if (!noprompt) Console.Write("Did not find IRC settings. Not creating pair.");
-                    }
-                }
-
-                // Listen for mannual commands
-                if (noprompt)
+                if (!string.IsNullOrEmpty(blobConnectionString) && !string.IsNullOrEmpty(blobContainerName) && !string.IsNullOrEmpty(blobContainerFolder))
                 {
-                    while (true)
-                    {
-                        // Block until process is manually stopped
-                        await Task.Delay(int.MaxValue);
-                    }
+                    if (WriteToConsole) Console.WriteLine("Loading config from Azure");
+                    await LoadFromBlobStorage(blobConnectionString.Split("=".ToCharArray(), 2)[1],
+                        blobContainerName.Split("=".ToCharArray(), 2)[1],
+                        blobContainerFolder.Split("=".ToCharArray(), 2)[1]);
                 }
                 else
                 {
-                    while (_listen)
-                    {
-                        var input = Console.ReadLine();
-                        var cmd = input.Split(" ".ToCharArray(), 2);
-                        switch (cmd[0].ToLower())
-                        {
-                            case "say":
-                                if (Pairs.Count > 1)
-                                {
-                                    if (!noprompt) Console.WriteLine("There is currently more than 1 channel pair active. Manual input is not currently supported.");
-                                    break;
-                                }
-
-                                if (cmd.Length > 1)
-                                {
-                                    await Pairs[0].SendDiscordMessage(cmd[1]);
-                                    Pairs[0].SendIrcMessage(cmd[1]);
-                                }
-                                else
-                                {
-                                    if (!noprompt) Console.WriteLine("Usage: say <message>");
-                                }
-                                break;
-                            case "exit":
-                            case "quit":
-                                _listen = false;
-                                break;
-                            default:
-                                break;
-                        }
-                    }
+                    if (WriteToConsole) Console.WriteLine("Loading config from disk");
+                    await LoadFromDisk();
                 }
+                
+                // Block until process is manually stopped
+                await Task.Delay(Timeout.Infinite);
             }
             catch (Exception ex)
             {
-                if (writeToConsole) Console.Write(ex.ToString());
+                if (WriteToConsole) Console.Write(ex.ToString());
                 File.WriteAllText(DateTime.Now.ToString("error-yyyy-MM-dd_hh-mm-ss.txt"), ex.ToString());
                 throw;
             }
+        }
+
+        private static async Task LoadFromDisk()
+        {
+            var discordFilenames = Directory.GetFiles(".", "*.discord.json");
+            if (WriteToConsole) Console.WriteLine("Found " + discordFilenames.Length.ToString() + " Discord settings");
+            foreach (var discordFilename in discordFilenames)
+            {
+                if (WriteToConsole) Console.WriteLine(discordFilename);
+                var ircFilename = discordFilename.Replace(".discord.json", ".irc.json");
+                if (File.Exists(ircFilename))
+                {
+                    if (WriteToConsole) Console.Write(ircFilename);
+                    var discordInfo = JsonConvert.DeserializeObject<DiscordConnectionInfo>(File.ReadAllText(discordFilename));
+                    var ircInfo = JsonConvert.DeserializeObject<IrcConnectionInfo>(File.ReadAllText(ircFilename));
+
+                    await LoadChannel(discordInfo, ircInfo);
+                }
+                else
+                {
+                    if (WriteToConsole) Console.Write("Did not find IRC settings. Not creating pair.");
+                }
+            }
+        }
+
+        private static async Task LoadFromBlobStorage(string connectionString, string containerName, string containerFolder)
+        {
+            var client = new BlobContainerClient(connectionString, containerName);
+            var blobNames = client.GetBlobs()
+                .Where(b => b.Name?.StartsWith(containerFolder + "/") ?? false)
+                .Select(b => b.Name)
+                .ToList();
+            foreach (var discordBlobName in blobNames.Where(b => b.EndsWith(".discord.json", StringComparison.OrdinalIgnoreCase)))
+            {
+                if (WriteToConsole) Console.WriteLine(discordBlobName);
+                var ircBlobName = discordBlobName.Replace(".discord.json", ".irc.json");
+                if (blobNames.Contains(ircBlobName, StringComparer.OrdinalIgnoreCase))
+                {
+                    var discordBlobContent = DeserializeStream<DiscordConnectionInfo>((await new BlobClient(connectionString, containerName, discordBlobName).DownloadAsync()).Value.Content);
+                    var ircBlobContent = DeserializeStream<IrcConnectionInfo>((await new BlobClient(connectionString, containerName, ircBlobName).DownloadAsync()).Value.Content);
+                   
+                    await LoadChannel(discordBlobContent, ircBlobContent);
+                }
+                else
+                {
+                    if (WriteToConsole) Console.Write("Did not find IRC settings. Not creating pair.");
+                }
+            }
+        }
+
+        private static T DeserializeStream<T>(Stream stream)
+        {
+            var serializer = new JsonSerializer();
+            using var sr = new StreamReader(stream);
+            using var jsonTextReader = new JsonTextReader(sr);
+            return serializer.Deserialize<T>(jsonTextReader);
+        }
+
+        private static async Task LoadChannel(DiscordConnectionInfo discordInfo, IrcConnectionInfo ircInfo) 
+        {
+            var pair = new ChannelPair(new IrcConnection(ircInfo) { EnableConsoleLogging = WriteToConsole }, discordInfo)
+            {
+                EnableConsoleLogging = WriteToConsole
+            };
+            if (WriteToConsole) Console.WriteLine("Connecting...");
+            await pair.Connect();
+            if (WriteToConsole) Console.WriteLine("Ready.");
+            Pairs.Add(pair);
         }
     }
 }

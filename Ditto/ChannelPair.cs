@@ -20,6 +20,7 @@ namespace Ditto
             this.EnableConsoleLogging = true;
             this.Ready = false;
             this.IrcConnection.ConnectComplete += Irc_ConnectComplete;
+            this.IrcConnection.MessageReceived += Irc_ChannelMessageReceived;
         }
 
         private DiscordConnectionInfo DiscordConnectionInfo { get; set; }
@@ -39,7 +40,7 @@ namespace Ditto
         {
             await ConnectDiscord();
             await Task.Delay(10000);
-            ConnectIrc();
+            Ready = true;
         }
 
         private async Task ConnectDiscord()
@@ -72,11 +73,6 @@ namespace Ditto
             {
                 if (EnableConsoleLogging) Console.WriteLine("Failed to send message to Discord: " + ex.ToString());
             }            
-        }
-
-        private void ConnectIrc()
-        {
-            IrcConnection.MessageReceived += Irc_ChannelMessageReceived;
         }
 
         public void SendIrcMessage(string msg)
