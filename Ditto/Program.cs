@@ -16,7 +16,7 @@ namespace Ditto
 
         public static async Task Main(string[] args)
         {
-            var config = JsonConvert.DeserializeObject<AppSettings>("appsettings.json");
+            var config = JsonConvert.DeserializeObject<AppSettings>(File.ReadAllText("appsettings.json"));
             WriteToConsole = !args.Contains("noprompt");
             try
             {
