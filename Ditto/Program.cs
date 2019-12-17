@@ -16,22 +16,17 @@ namespace Ditto
 
         public static async Task Main(string[] args)
         {
+            var config = JsonConvert.DeserializeObject<AppSettings>("appsettings.json");
             WriteToConsole = !args.Contains("noprompt");
             try
             {
                 if (WriteToConsole) Console.WriteLine("Starting...");
                 Pairs = new List<ChannelPair>();
 
-                var blobConnectionString = args.FirstOrDefault(a => a.StartsWith("blobConnectionString=", StringComparison.OrdinalIgnoreCase));
-                var blobContainerName = args.FirstOrDefault(a => a.StartsWith("blobContainerName=", StringComparison.OrdinalIgnoreCase));
-                var blobContainerFolder = args.FirstOrDefault(a => a.StartsWith("blobContainerFolder=", StringComparison.OrdinalIgnoreCase));
-
-                if (!string.IsNullOrEmpty(blobConnectionString) && !string.IsNullOrEmpty(blobContainerName) && !string.IsNullOrEmpty(blobContainerFolder))
+                if (config.UseBlobStorage)
                 {
                     if (WriteToConsole) Console.WriteLine("Loading config from Azure");
-                    await LoadFromBlobStorage(blobConnectionString.Split("=".ToCharArray(), 2)[1],
-                        blobContainerName.Split("=".ToCharArray(), 2)[1],
-                        blobContainerFolder.Split("=".ToCharArray(), 2)[1]);
+                    await LoadFromBlobStorage(config.BlobConnectionString, config.BlobContainerName, config.BlobContainerFolder);
                 }
                 else
                 {
