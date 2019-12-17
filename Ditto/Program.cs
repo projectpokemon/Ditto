@@ -23,7 +23,7 @@ namespace Ditto
                 if (WriteToConsole) Console.WriteLine("Starting...");
                 Pairs = new List<ChannelPair>();
 
-                if (config.UseBlobStorage)
+                if (!string.IsNullOrEmpty(config.BlobConnectionString))
                 {
                     if (WriteToConsole) Console.WriteLine("Loading config from Azure");
                     await LoadFromBlobStorage(config.BlobConnectionString, config.BlobContainerName, config.BlobContainerFolder);
