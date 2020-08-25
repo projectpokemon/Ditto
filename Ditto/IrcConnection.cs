@@ -26,7 +26,7 @@ namespace Ditto
                 IrcClient.Connected += Irc_Connected;
                 IrcClient.ConnectFailed += Irc_ConnectFailed;
                 IrcClient.MotdReceived += Irc_MotdReceived;
-                IrcClient.Connect(ircConnectionInfo.Server, ircConnectionInfo.Port, false, ircConnectionInfo.GetRegistrationInfo());
+                IrcClient.Connect(ircConnectionInfo.Server, ircConnectionInfo.Port, ircConnectionInfo.UseSsl, ircConnectionInfo.GetRegistrationInfo());
 
                 // Wait for event handlers to authenticate and join the channel
                 Thread.Sleep(30 * 1000);

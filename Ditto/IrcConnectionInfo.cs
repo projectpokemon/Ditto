@@ -14,6 +14,7 @@ namespace Ditto
 
         public string Server { get; set; }
         public int Port { get; set; }
+        public bool UseSsl { get; set; }
         public string Channel { get; set; }
         public string ChannelPassword { get; set; }
         public string Nick { get; set; }
